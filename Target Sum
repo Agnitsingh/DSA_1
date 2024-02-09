@@ -1,0 +1,75 @@
+class Solution {
+public:
+
+    int targetSum(int index, int target, vector<int>& nums, vector<vector<int>> &dp)
+    {
+        // Base Cases
+        if(index == 0){
+            if(nums[0] == 0 && target == 0) return 2;
+            if(nums[0] == target || target == 0) return 1;
+            return 0;
+        }
+
+        if(dp[index][target]!=-1) return dp[index][target];
+
+        int exclude = targetSum(index-1, target, nums, dp);
+        int include = 0;
+        if(target>=nums[index]){
+            include = targetSum(index-1, target-nums[index], nums, dp);
+        }
+
+        dp[index][target] =  (include + exclude); 
+        return dp[index][target];
+    }
+
+    int findTargetSumWays(vector<int>& nums, int target) 
+    {
+        int n = nums.size();
+        
+        // Concept - Subset Sum To K -> No of Subsets with difference D -> Target Sum (Symbols)
+        // 2 Subsets {1,2,3,1} T=3 => [(+3,+2)(-1,-1)] [(+3,+1,+1)(-2)] 
+        // s1-s2 = Target
+        // TotalSum-2s2 = Target
+        // s2 = (TotalSum-Target)/2
+        // We need to find Subsets with sum =  s2
+
+        int totalSum = 0;
+        for(int i=0; i<n; i++) totalSum += nums[i];
+
+        // All array values are >= 0 So sum can't be negative & Sum cant be in fraction
+
+        if(totalSum-target<0 || (totalSum-target)%2 != 0) return 0;
+
+        int newTarget = (totalSum-target)/2;
+
+        //vector<vector<int>> dp(n, vector<int>(target+1, -1));
+        //int answer = targetSum(n-1, newTarget, nums, dp);
+
+        // Step 1
+        vector<vector<int>> dp(n, vector<int>(newTarget+1, 0));
+
+        // Step 2
+        if(nums[0]==0) dp[0][0] = 2;
+        else dp[0][0] = 1;
+        
+        if(nums[0]!=0 && newTarget>=nums[0]) dp[0][nums[0]] = 1;
+
+        for(int index=1; index<n; index++){
+            for(int target = 0; target<=newTarget; target++){
+                    int exclude = dp[index-1][target];
+                    int include = 0;
+                    if(target>=nums[index]){
+                        include = dp[index-1][target-nums[index]];
+                    }
+
+                    dp[index][target] =  (include + exclude); 
+            }
+        }
+
+        return dp[n-1][newTarget];
+    }
+};
+
+// Passed with Recursion
+// Didn't passed with Memoization
+// Tabulation Passed
