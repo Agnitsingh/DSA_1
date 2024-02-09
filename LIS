@@ -1,0 +1,70 @@
+class Solution {
+public:
+    int lengthOfLIS(vector<int>& nums) {
+        int n = nums.size();
+        
+        // Step 1 (Declaration)
+        vector<int> dp(n,0);
+
+        // Step 2 (Base Case)
+        dp[0] = 1;
+
+        // Step 3 (All other cases)
+        
+        for(int index=1; index<n; index++){
+            int initial = 1;
+            dp[index] = 1;
+            for(int i=0; i<index; i++){
+                if(nums[i]<nums[index]){
+                    dp[index] = 1+dp[i];
+                }
+                initial = max(initial, dp[index]);
+            }
+            dp[index] = initial;
+        }
+
+        int answer = INT_MIN;
+
+        for(int i=0; i<n; i++){
+            cout<<dp[i]<<" ";
+        }
+
+        for(int i=0; i<n; i++){
+            answer = max(answer,dp[i]);
+        }
+
+        return answer;
+    }
+};
+
+
+
+
+// class Solution {
+// public:
+
+//     int lenLIS(int prev, int curr, vector<int>& nums, vector<vector<int>> &dp){
+        
+//         int n = nums.size();
+//         if(curr>=n) return 0;
+
+//         if(dp[prev+1][curr]!=-1) return dp[prev+1][curr];
+
+//         int take = 0;
+//         if(prev==-1 || nums[curr]>nums[prev]){
+//             take = 1 + lenLIS(curr, curr+1, nums, dp);
+//         }
+//         int notTake = 0 + lenLIS(prev, curr+1, nums, dp);
+//         dp[prev+1][curr] = max(take, notTake);
+//         return dp[prev+1][curr];
+//     }
+
+//     int lengthOfLIS(vector<int>& nums) {
+//         int n = nums.size();
+//         vector<vector<int>> dp(n+1, vector<int>(n, -1));
+//         int prev = -1;
+//         int curr = 0;
+//         int ans = lenLIS(prev,curr,nums, dp);
+//         return ans;
+//     }
+// };
